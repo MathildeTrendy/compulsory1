@@ -1,0 +1,15 @@
+# Build artifacts
+bin/
+obj/
+
+# User-specific files
+*.db
+*.db-shm
+*.db-wal
+
+# VS/IDE settings
+.vscode/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates

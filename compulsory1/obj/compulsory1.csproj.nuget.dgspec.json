@@ -1,30 +1,30 @@
 {
   "format": 1,
   "restore": {
-    "/Users/Penneo/RiderProjects/compulsory1/compulsory1/compulsory1.csproj": {}
+    "/Users/sabrinahammerichebbesen/Desktop/Softwareudvikling/Database for developers/Compol1/compulsory1/compulsory1/compulsory1.csproj": {}
   },
   "projects": {
-    "/Users/Penneo/RiderProjects/compulsory1/compulsory1/compulsory1.csproj": {
+    "/Users/sabrinahammerichebbesen/Desktop/Softwareudvikling/Database for developers/Compol1/compulsory1/compulsory1/compulsory1.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/Penneo/RiderProjects/compulsory1/compulsory1/compulsory1.csproj",
+        "projectUniqueName": "/Users/sabrinahammerichebbesen/Desktop/Softwareudvikling/Database for developers/Compol1/compulsory1/compulsory1/compulsory1.csproj",
         "projectName": "compulsory1",
-        "projectPath": "/Users/Penneo/RiderProjects/compulsory1/compulsory1/compulsory1.csproj",
-        "packagesPath": "/Users/Penneo/.nuget/packages/",
-        "outputPath": "/Users/Penneo/RiderProjects/compulsory1/compulsory1/obj/",
+        "projectPath": "/Users/sabrinahammerichebbesen/Desktop/Softwareudvikling/Database for developers/Compol1/compulsory1/compulsory1/compulsory1.csproj",
+        "packagesPath": "/Users/sabrinahammerichebbesen/.nuget/packages/",
+        "outputPath": "/Users/sabrinahammerichebbesen/Desktop/Softwareudvikling/Database for developers/Compol1/compulsory1/compulsory1/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/Users/Penneo/.nuget/NuGet/NuGet.Config"
+          "/Users/sabrinahammerichebbesen/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
-          "net8.0"
+          "net9.0"
         ],
         "sources": {
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
-          "net8.0": {
-            "targetAlias": "net8.0",
+          "net9.0": {
+            "targetAlias": "net9.0",
             "projectReferences": {}
           }
         },
@@ -41,8 +41,28 @@
         "SdkAnalysisLevel": "9.0.100"
       },
       "frameworks": {
-        "net8.0": {
-          "targetAlias": "net8.0",
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[9.0.9, )"
+            },
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[9.0.9, )"
+            },
+            "Microsoft.EntityFrameworkCore.SqlServer": {
+              "target": "Package",
+              "version": "[9.0.9, )"
+            },
+            "Microsoft.EntityFrameworkCore.Sqlite": {
+              "target": "Package",
+              "version": "[9.0.9, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",
@@ -54,20 +74,6 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[8.0.12, 8.0.12]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Host.osx-arm64",
-              "version": "[8.0.12, 8.0.12]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[8.0.12, 8.0.12]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
