@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using compulsory1.Models;
 
@@ -10,9 +11,11 @@ using compulsory1.Models;
 namespace compulsory1.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250925112810_V3_AddDateOfBirthToStudent")]
+    partial class V3_AddDateOfBirthToStudent
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.9");
@@ -26,16 +29,11 @@ namespace compulsory1.Migrations
                     b.Property<int>("Credits")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("InstructorId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("InstructorId");
 
                     b.ToTable("Courses");
                 });
@@ -49,7 +47,7 @@ namespace compulsory1.Migrations
                     b.Property<int>("CourseId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("FinalGrade")
+                    b.Property<string>("Grade")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("StudentId")
@@ -62,32 +60,6 @@ namespace compulsory1.Migrations
                     b.HasIndex("StudentId");
 
                     b.ToTable("Enrollments");
-                });
-
-            modelBuilder.Entity("compulsory1.Models.Instructor", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("HireDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Instructors");
                 });
 
             modelBuilder.Entity("compulsory1.Models.Student", b =>
@@ -125,15 +97,6 @@ namespace compulsory1.Migrations
                     b.ToTable("Students");
                 });
 
-            modelBuilder.Entity("compulsory1.Models.Course", b =>
-                {
-                    b.HasOne("compulsory1.Models.Instructor", "Instructor")
-                        .WithMany("Courses")
-                        .HasForeignKey("InstructorId");
-
-                    b.Navigation("Instructor");
-                });
-
             modelBuilder.Entity("compulsory1.Models.Enrollment", b =>
                 {
                     b.HasOne("compulsory1.Models.Course", "Course")
@@ -156,11 +119,6 @@ namespace compulsory1.Migrations
             modelBuilder.Entity("compulsory1.Models.Course", b =>
                 {
                     b.Navigation("Enrollments");
-                });
-
-            modelBuilder.Entity("compulsory1.Models.Instructor", b =>
-                {
-                    b.Navigation("Courses");
                 });
 
             modelBuilder.Entity("compulsory1.Models.Student", b =>

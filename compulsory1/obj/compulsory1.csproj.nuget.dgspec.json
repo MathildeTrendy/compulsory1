@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "/Users/sabrinahammerichebbesen/Desktop/Softwareudvikling/Database for developers/Compol1/compulsory1/compulsory1/compulsory1.csproj": {}
+    "/Users/Penneo/RiderProjects/compulsory1/compulsory1/compulsory1.csproj": {}
   },
   "projects": {
-    "/Users/sabrinahammerichebbesen/Desktop/Softwareudvikling/Database for developers/Compol1/compulsory1/compulsory1/compulsory1.csproj": {
+    "/Users/Penneo/RiderProjects/compulsory1/compulsory1/compulsory1.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/sabrinahammerichebbesen/Desktop/Softwareudvikling/Database for developers/Compol1/compulsory1/compulsory1/compulsory1.csproj",
+        "projectUniqueName": "/Users/Penneo/RiderProjects/compulsory1/compulsory1/compulsory1.csproj",
         "projectName": "compulsory1",
-        "projectPath": "/Users/sabrinahammerichebbesen/Desktop/Softwareudvikling/Database for developers/Compol1/compulsory1/compulsory1/compulsory1.csproj",
-        "packagesPath": "/Users/sabrinahammerichebbesen/.nuget/packages/",
-        "outputPath": "/Users/sabrinahammerichebbesen/Desktop/Softwareudvikling/Database for developers/Compol1/compulsory1/compulsory1/obj/",
+        "projectPath": "/Users/Penneo/RiderProjects/compulsory1/compulsory1/compulsory1.csproj",
+        "packagesPath": "/Users/Penneo/.nuget/packages/",
+        "outputPath": "/Users/Penneo/RiderProjects/compulsory1/compulsory1/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/Users/sabrinahammerichebbesen/.nuget/NuGet/NuGet.Config"
+          "/Users/Penneo/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
