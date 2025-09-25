@@ -3,12 +3,13 @@ namespace compulsory1.Models
     public class Course
     {
         public int Id { get; set; }
-        public string Title  { get; set; } = null!;
+        public string Title { get; set; } = null!;
+        public int Credits { get; set; } // V7: skiftes til decimal(5,2)
 
-        // V7 kommer senere – start med int (kravet siger du først ændrer i V7)
-        public int Credits { get; set; }
+        // V4: FK til Instructor (nullable = non-destructive)
+        public int? InstructorId { get; set; }
+        public Instructor? Instructor { get; set; }
 
-        // Navigation
         public ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
     }
 }
