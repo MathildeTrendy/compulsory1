@@ -2,12 +2,13 @@ namespace compulsory1.Models
 {
     public class Course
     {
-        public int Id { get; set; }                  
-        public string Title  { get; set; } = "";
-        public int Credits     { get; set; }
+        public int Id { get; set; }
+        public string Title  { get; set; } = null!;
 
-        // Navigation property (FK relationship)
-        public ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>(); 
+        // V7 kommer senere – start med int (kravet siger du først ændrer i V7)
+        public int Credits { get; set; }
 
+        // Navigation
+        public ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
     }
 }
