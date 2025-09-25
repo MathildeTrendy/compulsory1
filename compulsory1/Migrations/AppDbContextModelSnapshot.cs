@@ -44,8 +44,8 @@ namespace compulsory1.Migrations
                     b.Property<int>("CourseId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("Grade")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("Grade")
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("StudentId")
                         .HasColumnType("INTEGER");
@@ -65,6 +65,9 @@ namespace compulsory1.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<DateTime?>("DateOfBirth")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -77,11 +80,13 @@ namespace compulsory1.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Gender")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("LastName")
                         .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("MiddleName")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
