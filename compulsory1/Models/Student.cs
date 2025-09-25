@@ -12,7 +12,7 @@ namespace compulsory1.Models
 
         // valgfrie felter (V2, V3, din egen Gender)
         public string? MiddleName { get; set; }         // V2
-        public DateTime? DateOfBirth { get; set; }      // V3 (kommer senere)
+        public DateTime? DateOfBirth { get; set; }      // 
         public string? Gender { get; set; }             // ekstra felt
 
         public ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
