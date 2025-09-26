@@ -1,0 +1,1 @@
+ALTER TABLE Students ADD COLUMN DateOfBirth TEXT NULL; -- ISO-8601 string

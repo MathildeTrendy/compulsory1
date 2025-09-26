@@ -9,7 +9,7 @@ namespace compulsory1.Models
         public int CourseId  { get; set; }
 
         // Grade i V1–V4 (valgfrí -> non-destructive)
-        public string? Grade { get; set; }
+        public string? FinalGrade { get; set; }
 
         // Navigationer (krævede refs)
         public Student Student { get; set; } = null!;
