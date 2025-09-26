@@ -1,72 +1,65 @@
 # Student Management – Database Migrations (Compulsory1)
 
-Dette projekt demonstrerer to forskellige tilgange til database­migrationer i **Entity Framework Core**:  
-1. Change-based (Code-First)  
-2. State-based  
+Dette projekt demonstrerer to forskellige tilgange til database­migrationer i **Entity Framework Core (EF Core)**:  
+1. **Change-based (Code-First Migrations)**  
+2. **State-based (Full Script Generation)**  
 
-Formålet er at illustrere styrker og svagheder ved de to metoder og give en praktisk reference til, hvordan man kan anvende dem i .NET / EF Core sammenhæng.
+Formålet er at belyse de to metoders forskellige egenskaber i forhold til **database versionering**, **schema evolution** og **kontinuerlig integration/deployment (CI/CD)**.  
+Projektet fungerer som en praktisk case i, hvordan man kan håndtere ændringer i databasens schema over tid.
 
 ---
 
 ## Baggrund og motivation
 
-I mange softwareprojekter med databaser er migrations et centralt spørgsmål: hvordan bringer vi databasen i sync med modellen (domain classes), når vi udvikler videre over tid?  
+I moderne softwareudvikling er databasen sjældent statisk. Nye features kræver ændringer i datamodellen, som igen kræver, at **databaseschemaet** (tabeller, kolonner, relationer) justeres.  
+En **migration** er et kontrolleret sæt instruktioner, der bringer databasen fra én **versionstilstand** til en anden.
 
-De to traditionelle tilgange:
+To udbredte tilgange i EF Core er:  
 
-- **Change-based (Code-First migrations)**: Man skriver kode, ændrer modellen, genererer en migration pr. ændring og anvender disse trinvis.  
-- **State-based**: Man genererer et fuldt SQL-script, der transformerer databasen fra den aktuelle tilstand til den ønskede modellestand; man behøver ikke bevare hele historikken i migrationsfiler.
+- **Change-based (Code-First)**  
+  Her registreres ændringer i modellerne som en sekvens af migrationer. Hver migration beskriver en *differens* (delta) mellem tidligere og ny model.  
+  Denne metode understøtter **inkrementel udvikling**, rollback til tidligere versioner og detaljeret versionshistorik.
 
-Dette projekt viser begge tilgange i én kontekst (et "student management"-system med entiteter som `Student`, `Course`, `Enrollment`), og illustrerer, hvornår man bør vælge den ene eller den anden.
+- **State-based (Script Generation)**  
+  Her genereres et fuldt **SQL-script**, der direkte opdaterer databasen fra dens nuværende tilstand til den ønskede sluttilstand.  
+  Metoden fokuserer på **idempotente scripts** (kan køres gentagne gange uden bivirkninger) og gør det nemt at distribuere ét samlet script.
+
+I dette projekt anvendes et simpelt **student management system** med entiteter som `Student`, `Course` og `Enrollment` til at demonstrere begge tilgange.
 
 ---
 
 ## Arkitektur og struktur
 
-Projektets mappe­struktur (relevant del) ser omtrent sådan ud:
+Projektets mappe­struktur (uddrag):
 
 ```
 /compulsory1
- ├── state-based/ sqlite
- ├── compulsory1/ (den primære .NET-projektmappe)
- ├── artifacts/ ef
+ ├── state-based/ sqlite        # SQL-scripts til state-based tilgang
+ ├── compulsory1/               # EF Core projekt (models, DbContext, migrations)
+ ├── artifacts/ ef              # Genererede migrationsfiler og snapshots
  ├── .gitignore
- ├── README.md
- ├── README_STATE.md
- ├── README_EF.md
+ ├── README.md                  # Denne dokumentation
 ```
 
-Forklaring:
+Indhold i `compulsory1/`:
 
-- `compulsory1/` — hovedprojektet med EF Core, entiteter, kontekst og migrations ­ (Code-First)  
-- `state-based/ sqlite` — mappe med det SQL-script eller databasefiler, der bruges i state-based tilgangen  
-- `artifacts/ ef` — mappe med artefakter genereret af EF, fx migrationsfiler, snapshots mv.  
-- `README_STATE.md` — specifik dokumentation for state-based-tilgangen  
-- `README_EF.md` — dokumentation for EF / change-based tilgangen  
-
-I `compulsory1/` findes typisk:
-
-- Modelklasser (fx `Student`, `Course`, `Enrollment`)  
-- `DbContext` (f.eks. `StudentContext` eller lignende)  
-- Konfiguration af EF Core  
-- Migrationsmapper genereret af EF  
-- Kode til seed-data eller initialisering  
+- **Domain models**: `Student`, `Course`, `Enrollment`  
+- **DbContext**: central klasse, der konfigurerer databaseforbindelse og modelmapping  
+- **Migrations**: auto-genererede klasser, der beskriver schemaændringer  
+- **Model snapshot**: repræsenterer den nuværende modeltilstand (bruges til at sammenligne mod nye ændringer)  
+- **Seed-data**: evt. initielle testdata  
 
 ---
 
 ## Installation og opsætning
 
-Følgende trin beskriver, hvordan du sætter projektet op lokalt og afprøver de forskellige migrationsmetoder.
-
 ### Forudsætninger
 
-- .NET SDK (fx .NET 6 eller nyere)  
-- EF Core CLI-værktøjer  
-- SQLite (eller en anden database, hvis du ønsker at skifte)  
+- .NET SDK (fx .NET 6/7)  
+- EF Core CLI (`dotnet-ef`)  
+- SQLite (standard i dette projekt, men nemt at udskifte med SQL Server, PostgreSQL m.fl.)  
 
 ### Pakkeinstallation
-
-Kør i projektmappen:
 
 ```bash
 dotnet add package Microsoft.EntityFrameworkCore
@@ -74,7 +67,7 @@ dotnet add package Microsoft.EntityFrameworkCore.Design
 dotnet add package Microsoft.EntityFrameworkCore.Sqlite
 ```
 
-Du kan verificere installerede pakker med:
+Bekræft installationen:
 
 ```bash
 dotnet list package
@@ -82,79 +75,79 @@ dotnet list package
 
 ---
 
-## Brug og eksempler
+## Steps og faglig begrundelse
 
 ### Change-based migrations
 
-1. Opret den første migration:
-
+**Steps udført i projektet:**  
+1. Oprettede en **initial migration** baseret på mine domæneklasser:  
    ```bash
    dotnet ef migrations add InitialCreate
-   ```
-
-2. Anvend migrationen til databasen:
-
-   ```bash
    dotnet ef database update
    ```
-
-3. Ændringer i modellen:
-
+   Dette genererede både en migrationsklasse og en **ModelSnapshot**, som repræsenterer schemaets tilstand.  
+2. Ændrede modellen ved at tilføje en ny property (fx `Gender`) til `Student`.  
+   Derefter:  
    ```bash
-   // Tilføj fx en ny property i Student-klassen
    dotnet ef migrations add AddGenderToStudent
    dotnet ef database update
    ```
+   Dette skabte en inkrementel migration, som kun ændrede databasen med en ekstra kolonne.
+
+**Begrundelse (faglig vurdering):**  
+- Change-based tilgangen understøtter **schema evolution** gennem en serie af *deltaer*.  
+- Hver migration kan rollbackes, hvilket sikrer **reversibilitet** og **fejltolerance**.  
+- Metoden er stærk i teams, hvor **versionskontrol** (Git) håndterer migrationsfilerne, og hvor merge-konflikter skal løses systematisk.  
+- Ulempen er **migrationsstøj** (mange filer over tid) og kompleksitet ved parallelle udviklingsgrene.  
 
 ---
 
 ### State-based migrations
 
-1. Generer et SQL-script:
-
+**Steps udført i projektet:**  
+1. Genererede et SQL-script baseret på forskellen mellem nuværende database og model:  
    ```bash
    dotnet ef migrations script -o update.sql
    ```
+2. Kørte scriptet mod SQLite databasen.  
 
-2. Kør `update.sql` mod databasen via dit foretrukne databaseværktøj.  
+Dette script var **idempotent** og kunne køres både i udvikling og produktion for at bringe databasen i sync.
 
-Dette script indeholder den fulde ændring fra den nuværende database til den ønskede modellestand.
+**Begrundelse (faglig vurdering):**  
+- State-based tilgangen fokuserer på **sluttilstanden**, ikke historikken.  
+- Velegnet til **Continuous Deployment**, hvor ét script kan eksekveres i produktion uden at migrere trinvis.  
+- Reducerer kompleksitet ved små projekter eller prototyper.  
+- Mangler dog mulighed for fin-grained rollback og **audit trail** af tidligere ændringer.  
 
 ---
 
-## Fordele og ulemper
+## Sammenligning – Fordele og ulemper
 
-### ✅ Change-based (Code-First)
-
-**Fordele:**
-- Historik over alle ændringer  
-- Mulighed for rollback  
-- God til større projekter med flere udviklere  
-
-**Ulemper:**
-- Mange migrationsfiler over tid  
-- Potentielle merge-konflikter  
-
-### ✅ State-based
-
-**Fordele:**
-- Ét samlet script til distribution  
-- Ingen afhængighed af migrationshistorik  
-- Simpelt at deploye  
-
-**Ulemper:**
-- Ingen detaljeret historik  
-- Svært at rulle specifikke ændringer tilbage  
+| Egenskab                | Change-based                                | State-based                          |
+|--------------------------|---------------------------------------------|---------------------------------------|
+| Historik                | Ja – detaljerede migrationer                | Nej – kun sluttilstand                |
+| Rollback                | Muligt, migrations kan køres baglæns        | Vanskeligt, kræver manuelle scripts   |
+| Versionskontrol         | Migrationer kan versionstyres i Git         | Kun scriptversioner                   |
+| CI/CD                   | Mere kompleks at integrere                  | Nem distribution af ét script         |
+| Idempotency             | Afhænger af migreringskode                  | Ofte idempotente scripts              |
+| Egnet til               | Store projekter, teams, kompleks schema     | Små projekter, hurtige prototyper     |
 
 ---
 
 ## Projektstatus og konklusion
 
-Dette projekt er et undervisnings- og demonstrationsprojekt, der viser to migrationsstrategier i EF Core.  
+Dette projekt viser to migrationsstrategier i EF Core og deres praktiske implikationer:  
 
-- Change-based giver kontrol og historik.  
-- State-based giver enkelhed og hurtig deployment.  
+- **Change-based**:  
+  Giver detaljeret kontrol, fuld versionshistorik og er bedst egnet til store projekter med mange udviklere.  
+  Understøtter rollback og granularitet i ændringer, men kan medføre kompleksitet og filophobning.  
 
-Begge tilgange har deres berettigelse afhængig af projektets størrelse og behov.
+- **State-based**:  
+  Giver hurtig deployment og enklere pipeline-integration. Egner sig bedst til små projekter, hvor historik ikke er kritisk.  
+  Gør det nemt at generere ét script til produktion, men uden rollback og audit trail.  
+
+**Konklusion:**  
+Ved at kombinere begge tilgange i dette projekt har jeg opnået en dybere forståelse af **database migrations som disciplin**, samt hvordan forskellige valg kan påvirke **driftsstabilitet, udviklingsworkflow og deploymentstrategier**.
 
 ---
+
