@@ -1,12 +1,72 @@
-# Student Management – Database Migrations
+# Student Management – Database Migrations (Compulsory1)
 
-Dette projekt demonstrerer to forskellige tilgange til database-migrationer i Entity Framework Core: **Change-based (Code-First)** og **State-based**.
+Dette projekt demonstrerer to forskellige tilgange til database­migrationer i **Entity Framework Core**:  
+1. Change-based (Code-First)  
+2. State-based  
+
+Formålet er at illustrere styrker og svagheder ved de to metoder og give en praktisk reference til, hvordan man kan anvende dem i .NET / EF Core sammenhæng.
 
 ---
 
-## 📦 Installation af nødvendige pakker
+## Baggrund og motivation
 
-For at komme i gang installerede vi Entity Framework Core og SQLite (vi bruger SQLite i dette projekt, men SqlServer kunne også anvendes):
+I mange softwareprojekter med databaser er migrations et centralt spørgsmål: hvordan bringer vi databasen i sync med modellen (domain classes), når vi udvikler videre over tid?  
+
+De to traditionelle tilgange:
+
+- **Change-based (Code-First migrations)**: Man skriver kode, ændrer modellen, genererer en migration pr. ændring og anvender disse trinvis.  
+- **State-based**: Man genererer et fuldt SQL-script, der transformerer databasen fra den aktuelle tilstand til den ønskede modellestand; man behøver ikke bevare hele historikken i migrationsfiler.
+
+Dette projekt viser begge tilgange i én kontekst (et "student management"-system med entiteter som `Student`, `Course`, `Enrollment`), og illustrerer, hvornår man bør vælge den ene eller den anden.
+
+---
+
+## Arkitektur og struktur
+
+Projektets mappe­struktur (relevant del) ser omtrent sådan ud:
+
+```
+/compulsory1
+ ├── state-based/ sqlite
+ ├── compulsory1/ (den primære .NET-projektmappe)
+ ├── artifacts/ ef
+ ├── .gitignore
+ ├── README.md
+ ├── README_STATE.md
+ ├── README_EF.md
+```
+
+Forklaring:
+
+- `compulsory1/` — hovedprojektet med EF Core, entiteter, kontekst og migrations ­ (Code-First)  
+- `state-based/ sqlite` — mappe med det SQL-script eller databasefiler, der bruges i state-based tilgangen  
+- `artifacts/ ef` — mappe med artefakter genereret af EF, fx migrationsfiler, snapshots mv.  
+- `README_STATE.md` — specifik dokumentation for state-based-tilgangen  
+- `README_EF.md` — dokumentation for EF / change-based tilgangen  
+
+I `compulsory1/` findes typisk:
+
+- Modelklasser (fx `Student`, `Course`, `Enrollment`)  
+- `DbContext` (f.eks. `StudentContext` eller lignende)  
+- Konfiguration af EF Core  
+- Migrationsmapper genereret af EF  
+- Kode til seed-data eller initialisering  
+
+---
+
+## Installation og opsætning
+
+Følgende trin beskriver, hvordan du sætter projektet op lokalt og afprøver de forskellige migrationsmetoder.
+
+### Forudsætninger
+
+- .NET SDK (fx .NET 6 eller nyere)  
+- EF Core CLI-værktøjer  
+- SQLite (eller en anden database, hvis du ønsker at skifte)  
+
+### Pakkeinstallation
+
+Kør i projektmappen:
 
 ```bash
 dotnet add package Microsoft.EntityFrameworkCore
@@ -14,7 +74,7 @@ dotnet add package Microsoft.EntityFrameworkCore.Design
 dotnet add package Microsoft.EntityFrameworkCore.Sqlite
 ```
 
-👉 Du kan se alle installerede pakker i projektet ved at køre:
+Du kan verificere installerede pakker med:
 
 ```bash
 dotnet list package
@@ -22,72 +82,79 @@ dotnet list package
 
 ---
 
-## 🔹 Change-based migration (Code-First med EF Core)
+## Brug og eksempler
 
-Når vi arbejder **change-based**, betyder det, at vi laver små trin for hver ændring i vores datamodel. EF Core opretter en migrationsfil, som beskriver præcis hvilke ændringer, der skal laves i databasen.
+### Change-based migrations
 
-### Sådan fungerer det:
-
-1. **Opret første migration**
+1. Opret den første migration:
 
    ```bash
    dotnet ef migrations add InitialCreate
    ```
 
-   Dette laver en migrationsmappe med:
-
-   - En migrationsfil (`InitialCreate`), der indeholder SQL til at oprette tabellerne (`Students`, `Courses`, `Enrollments`).
-   - En `ModelSnapshot`, der holder styr på den aktuelle modeltilstand.
-
-2. **Opdater databasen**
+2. Anvend migrationen til databasen:
 
    ```bash
    dotnet ef database update
    ```
 
-   Dette kører migrationsfilen og opretter databasen (her `students.db`).
-
-3. **Foretag ændringer i modellen**  
-   Hvis vi fx tilføjer feltet `Gender` til `Student`, laver vi en ny migration:
+3. Ændringer i modellen:
 
    ```bash
+   // Tilføj fx en ny property i Student-klassen
    dotnet ef migrations add AddGenderToStudent
    dotnet ef database update
    ```
 
-   Nu er databasen opdateret med en ny kolonne `Gender` i tabellen `Students`.
-
-### Fordele / Ulemper
-
-- ✅ Gemmer hele historikken af ændringer → nemt at rulle tilbage eller forstå udviklingen.
-- ❌ Kan resultere i mange migrationsfiler over tid.
-
 ---
 
-## 🔹 State-based migration (Model vs. Database)
+### State-based migrations
 
-Ved state-based migration fokuserer man ikke på historikken af ændringer, men kun på forskellen mellem **den aktuelle database** og **den ønskede model**.
-
-### Sådan fungerer det:
-
-1. Generér et SQL-script direkte ud fra modellen:
+1. Generer et SQL-script:
 
    ```bash
    dotnet ef migrations script -o update.sql
    ```
 
-2. Dette laver en fil `update.sql`, som indeholder hele den nødvendige SQL til at bringe databasen i sync med den nyeste model.
-   - Hvis man deler databasen med andre, kan de bare køre `update.sql`.
-   - De behøver ikke alle tidligere migrations – kun scriptet, der repræsenterer den endelige tilstand.
+2. Kør `update.sql` mod databasen via dit foretrukne databaseværktøj.  
 
-### Fordele / Ulemper
-
-- ✅ Hurtig måde at bringe en database up-to-date.
-- ❌ Mangler detaljeret historik, hvilket gør det svært at rulle præcise ændringer tilbage.
+Dette script indeholder den fulde ændring fra den nuværende database til den ønskede modellestand.
 
 ---
 
-## 📝 Konklusion
+## Fordele og ulemper
 
-- **Change-based** bruges til dagligt udviklingsarbejde, hvor man vil bevare en log af alle ændringer.
-- **State-based** kan bruges til at generere en endelig version af databasen hurtigt, fx til deployment.
+### ✅ Change-based (Code-First)
+
+**Fordele:**
+- Historik over alle ændringer  
+- Mulighed for rollback  
+- God til større projekter med flere udviklere  
+
+**Ulemper:**
+- Mange migrationsfiler over tid  
+- Potentielle merge-konflikter  
+
+### ✅ State-based
+
+**Fordele:**
+- Ét samlet script til distribution  
+- Ingen afhængighed af migrationshistorik  
+- Simpelt at deploye  
+
+**Ulemper:**
+- Ingen detaljeret historik  
+- Svært at rulle specifikke ændringer tilbage  
+
+---
+
+## Projektstatus og konklusion
+
+Dette projekt er et undervisnings- og demonstrationsprojekt, der viser to migrationsstrategier i EF Core.  
+
+- Change-based giver kontrol og historik.  
+- State-based giver enkelhed og hurtig deployment.  
+
+Begge tilgange har deres berettigelse afhængig af projektets størrelse og behov.
+
+---
