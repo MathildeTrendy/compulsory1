@@ -1,0 +1,1 @@
+ALTER TABLE Students ADD COLUMN MiddleName TEXT NULL;
