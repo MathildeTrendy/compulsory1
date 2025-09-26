@@ -1,15 +1,16 @@
-# Build artifacts
-bin/
-obj/
+# Build output
+**/bin/
+**/obj/
 
-# User-specific files
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS junk
+.DS_Store
+
+# Lokale databaser (skal ikke i git)
 *.db
 *.db-shm
 *.db-wal
-
-# VS/IDE settings
-.vscode/
-*.suo
-*.user
-*.userosscache
-*.sln.docstates
