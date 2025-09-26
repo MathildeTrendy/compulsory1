@@ -4,7 +4,9 @@ namespace compulsory1.Models
     {
         public int Id { get; set; }
         public string Title { get; set; } = null!;
-        public int Credits { get; set; } // V7: skiftes til decimal(5,2)
+
+        // V7: ændret fra int → decimal
+        public decimal Credits { get; set; }
 
         // V4: FK til Instructor (nullable = non-destructive)
         public int? InstructorId { get; set; }
